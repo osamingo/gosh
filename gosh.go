@@ -9,8 +9,8 @@ import (
 )
 
 type (
-	// A Stats has runtime, memory statistics information.
-	Stats struct {
+	// A Statistics has runtime information.
+	Statistics struct {
 		Timestamp        int64     `json:"timestamp"`
 		GoVersion        string    `json:"go_version"`
 		GoOS             string    `json:"go_os"`
@@ -39,8 +39,8 @@ type (
 		GCPausePerSecond float64   `json:"gc_pause_per_second"`
 		GCPause          []float64 `json:"gc_pause"`
 	}
-	// A StatsHandler provides runtime, memory statistics handler.
-	StatsHandler struct {
+	// A StatisticsHandler provides runtime information handler.
+	StatisticsHandler struct {
 		m                sync.Mutex
 		lastSampledAt    time.Time
 		lastPauseTotalNs uint64
@@ -48,23 +48,23 @@ type (
 	}
 )
 
-// NewStatsHandler returns gosh.StatsHandler.
-func NewStatsHandler() *StatsHandler {
-	h := &StatsHandler{}
-	h.MeasureStats()
+// NewStatisticsHandler returns new StatisticsHandler.
+func NewStatisticsHandler() *StatisticsHandler {
+	h := &StatisticsHandler{}
+	h.MeasureRuntime()
 	return h
 }
 
 // ServeHTTP implements http.Handler interface.
-func (sh *StatsHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
+func (sh *StatisticsHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(sh.MeasureStats()); err != nil {
+	if err := json.NewEncoder(w).Encode(sh.MeasureRuntime()); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
 
-// MeasureStats accesses runtime, memory statistics information.
-func (sh *StatsHandler) MeasureStats() Stats {
+// MeasureRuntime accesses runtime information.
+func (sh *StatisticsHandler) MeasureRuntime() Statistics {
 
 	sh.m.Lock()
 	defer sh.m.Unlock()
@@ -96,7 +96,7 @@ func (sh *StatsHandler) MeasureStats() Stats {
 	sh.lastPauseTotalNs = ms.PauseTotalNs
 	sh.lastNumGC = ms.NumGC
 
-	return Stats{
+	return Statistics{
 		Timestamp:        now.Unix(),
 		GoVersion:        runtime.Version(),
 		GoOS:             runtime.GOOS,

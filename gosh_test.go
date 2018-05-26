@@ -6,10 +6,10 @@ import (
 	"testing"
 )
 
-var _ http.Handler = (*StatsHandler)(nil)
+var _ http.Handler = (*StatisticsHandler)(nil)
 
-func TestNewStatsHandler(t *testing.T) {
-	h := NewStatsHandler()
+func TestNewStatisticsHandler(t *testing.T) {
+	h := NewStatisticsHandler()
 	if h == nil {
 		t.Fatal("value is nil")
 	}
@@ -18,9 +18,9 @@ func TestNewStatsHandler(t *testing.T) {
 	}
 }
 
-func TestStatsHandler_ServeHTTP(t *testing.T) {
+func TestStatisticsHandler_ServeHTTP(t *testing.T) {
 
-	srv := httptest.NewServer(NewStatsHandler())
+	srv := httptest.NewServer(NewStatisticsHandler())
 	defer srv.Close()
 
 	resp, err := http.Get(srv.URL)
@@ -37,20 +37,20 @@ func TestStatsHandler_ServeHTTP(t *testing.T) {
 	}
 }
 
-func TestStatsHandler_MeasureStats(t *testing.T) {
+func TestStatisticsHandler_MeasureRuntime(t *testing.T) {
 	defer func() {
 		if err := recover(); err != nil {
 			t.Fatal("panic occurred")
 		}
 	}()
-	NewStatsHandler().MeasureStats()
+	NewStatisticsHandler().MeasureRuntime()
 }
 
-func BenchmarkStatsHandler_MeasureStats(b *testing.B) {
-	h := NewStatsHandler()
+func BenchmarkStatisticsHandler_MeasureRuntime(b *testing.B) {
+	h := NewStatisticsHandler()
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		h.MeasureStats()
+		h.MeasureRuntime()
 	}
 }

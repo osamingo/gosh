@@ -15,7 +15,7 @@ func main() {
 	const path = "/healthz"
 
 	mux := http.NewServeMux()
-	mux.Handle(path, gosh.NewStatsHandler())
+	mux.Handle(path, gosh.NewStatisticsHandler())
 
 	srv := httptest.NewServer(mux)
 	defer srv.Close()

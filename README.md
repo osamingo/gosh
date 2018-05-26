@@ -1,4 +1,4 @@
-# Gosh
+# Go Statistics Handler
 
 [![Build Status](https://travis-ci.org/osamingo/gosh.svg?branch=master)](https://travis-ci.org/osamingo/gosh)
 [![codecov](https://codecov.io/gh/osamingo/gosh/branch/master/graph/badge.svg)](https://codecov.io/gh/osamingo/gosh)
@@ -8,7 +8,10 @@
 
 ## About
 
-Go statistics handler
+- This Repository is provided following functions.
+  - Go runtime statistics struct.
+  - Go runtime statistics API handler.
+  - Go runtime measure method.
 
 ## Install
 
@@ -33,7 +36,7 @@ import (
 func main() {
 
 	mux := http.NewServeMux()
-	mux.Handle("/healthz", gosh.NewStatsHandler())
+	mux.Handle("/healthz", gosh.NewStatisticsHandler())
 
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatalln(err)
