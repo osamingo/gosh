@@ -13,7 +13,7 @@ type (
 	Stats struct {
 		Timestamp        int64     `json:"timestamp"`
 		GoVersion        string    `json:"go_version"`
-		GoOs             string    `json:"go_os"`
+		GoOS             string    `json:"go_os"`
 		GoArch           string    `json:"go_arch"`
 		CPUNum           int       `json:"cpu_num"`
 		GoroutineNum     int       `json:"goroutine_num"`
@@ -25,19 +25,19 @@ type (
 		MemoryLookups    uint64    `json:"memory_lookups"`
 		MemoryMallocs    uint64    `json:"memory_mallocs"`
 		MemoryFrees      uint64    `json:"memory_frees"`
-		StackInUse       uint64    `json:"memory_stack"`
+		StackInuse       uint64    `json:"stack_inuse"`
 		HeapAlloc        uint64    `json:"heap_alloc"`
 		HeapSys          uint64    `json:"heap_sys"`
 		HeapIdle         uint64    `json:"heap_idle"`
 		HeapInuse        uint64    `json:"heap_inuse"`
 		HeapReleased     uint64    `json:"heap_released"`
 		HeapObjects      uint64    `json:"heap_objects"`
-		GcNext           uint64    `json:"gc_next"`
-		GcLast           uint64    `json:"gc_last"`
-		GcNum            uint32    `json:"gc_num"`
-		GcPerSecond      float64   `json:"gc_per_second"`
-		GcPausePerSecond float64   `json:"gc_pause_per_second"`
-		GcPause          []float64 `json:"gc_pause"`
+		GCNext           uint64    `json:"gc_next"`
+		GCLast           uint64    `json:"gc_last"`
+		GCNum            uint32    `json:"gc_num"`
+		GCPerSecond      float64   `json:"gc_per_second"`
+		GCPausePerSecond float64   `json:"gc_pause_per_second"`
+		GCPause          []float64 `json:"gc_pause"`
 	}
 	// A StatsHandler provides runtime, memory statistics handler.
 	StatsHandler struct {
@@ -100,7 +100,7 @@ func (sh *StatsHandler) MeasureStats() Stats {
 	return Stats{
 		Timestamp:        now.UnixNano(),
 		GoVersion:        runtime.Version(),
-		GoOs:             runtime.GOOS,
+		GoOS:             runtime.GOOS,
 		GoArch:           runtime.GOARCH,
 		CPUNum:           runtime.NumCPU(),
 		GoroutineNum:     runtime.NumGoroutine(),
@@ -112,18 +112,18 @@ func (sh *StatsHandler) MeasureStats() Stats {
 		MemoryLookups:    ms.Lookups,
 		MemoryMallocs:    ms.Mallocs,
 		MemoryFrees:      ms.Frees,
-		StackInUse:       ms.StackInuse,
+		StackInuse:       ms.StackInuse,
 		HeapAlloc:        ms.HeapAlloc,
 		HeapSys:          ms.HeapSys,
 		HeapIdle:         ms.HeapIdle,
 		HeapInuse:        ms.HeapInuse,
 		HeapReleased:     ms.HeapReleased,
 		HeapObjects:      ms.HeapObjects,
-		GcNext:           ms.NextGC,
-		GcLast:           ms.LastGC,
-		GcNum:            ms.NumGC,
-		GcPerSecond:      gcPerSec,
-		GcPausePerSecond: gcPausePerSec,
-		GcPause:          gcPause,
+		GCNext:           ms.NextGC,
+		GCLast:           ms.LastGC,
+		GCNum:            ms.NumGC,
+		GCPerSecond:      gcPerSec,
+		GCPausePerSecond: gcPausePerSec,
+		GCPause:          gcPause,
 	}
 }
