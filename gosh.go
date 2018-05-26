@@ -77,14 +77,12 @@ func (sh *StatsHandler) MeasureStats() Stats {
 	if sh.lastPauseTotalNs > 0 {
 		gcPausePerSec = time.Duration(ms.PauseTotalNs - sh.lastPauseTotalNs).Seconds()
 	}
-	sh.lastPauseTotalNs = ms.PauseTotalNs
 
-	gcCount := int(ms.NumGC - sh.lastNumGC)
 	var gcPerSec float64
+	gcCount := int(ms.NumGC - sh.lastNumGC)
 	if sh.lastNumGC > 0 {
 		gcPerSec = float64(gcCount) / now.Sub(sh.lastSampledAt).Seconds()
 	}
-
 	if gcCount > 256 {
 		gcCount = 256
 	}
@@ -94,8 +92,9 @@ func (sh *StatsHandler) MeasureStats() Stats {
 		gcPause[i] = time.Duration(ms.PauseNs[(int(ms.NumGC)-i+255)%256]).Seconds()
 	}
 
-	sh.lastNumGC = ms.NumGC
 	sh.lastSampledAt = now
+	sh.lastPauseTotalNs = ms.PauseTotalNs
+	sh.lastNumGC = ms.NumGC
 
 	return Stats{
 		Timestamp:        now.UnixNano(),
