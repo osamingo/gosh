@@ -13,6 +13,7 @@ matrix:
 
 before_install:
   - go get -u github.com/alecthomas/gometalinter
+  - gometalinter --install
 
 before_script:
   - gometalinter
