@@ -97,7 +97,7 @@ func (sh *StatsHandler) MeasureStats() Stats {
 	sh.lastNumGC = ms.NumGC
 
 	return Stats{
-		Timestamp:        now.UnixNano(),
+		Timestamp:        now.Unix(),
 		GoVersion:        runtime.Version(),
 		GoOS:             runtime.GOOS,
 		GoArch:           runtime.GOARCH,
