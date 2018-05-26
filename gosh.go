@@ -57,11 +57,10 @@ func NewStatsHandler() *StatsHandler {
 
 // ServeHTTP implements http.Handler interface.
 func (sh *StatsHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(sh.MeasureStats()); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
 	}
-	w.Header().Set("Content-Type", "application/json")
 }
 
 // MeasureStats accesses runtime, memory statistics information.
