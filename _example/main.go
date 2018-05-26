@@ -30,5 +30,5 @@ func main() {
 		log.Fatalln("unexpect status code")
 	}
 
-	io.Copy(os.Stdout, resp.Body)
+	io.Copy(os.Stderr, resp.Body)
 }
