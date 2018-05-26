@@ -1,5 +1,11 @@
 # Gosh
 
+[![Build Status](https://travis-ci.org/osamingo/gosh.svg?branch=master)](https://travis-ci.org/osamingo/gosh)
+[![codecov](https://codecov.io/gh/osamingo/gosh/branch/master/graph/badge.svg)](https://codecov.io/gh/osamingo/gosh)
+[![Go Report Card](https://goreportcard.com/badge/github.com/osamingo/gosh)](https://goreportcard.com/report/github.com/osamingo/gosh)
+[![GoDoc](https://godoc.org/github.com/osamingo/gosh?status.svg)](https://godoc.org/github.com/osamingo/gosh)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/osamingo/gosh/master/LICENSE)
+
 ## About
 
 Go statistics handler
