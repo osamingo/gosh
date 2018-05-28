@@ -43,7 +43,12 @@ func TestStatisticsHandler_MeasureRuntime(t *testing.T) {
 			t.Fatal("panic occurred")
 		}
 	}()
-	NewStatisticsHandler().MeasureRuntime()
+	h := NewStatisticsHandler()
+	ss := make([]*Statistics, 100000)
+	for i := 0; i < len(ss); i ++ {
+		s := h.MeasureRuntime()
+		ss[i] = &s
+	}
 }
 
 func BenchmarkStatisticsHandler_MeasureRuntime(b *testing.B) {
