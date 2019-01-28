@@ -2,9 +2,8 @@ sudo: false
 
 language: go
 go:
-  - 1.8.x
-  - 1.9.x
   - 1.10.x
+  - 1.11.x
   - tip
 
 matrix:
@@ -12,11 +11,10 @@ matrix:
   - go: tip
 
 before_install:
-  - go get -u github.com/alecthomas/gometalinter
-  - gometalinter --install
+  - go get -u github.com/golangci/golangci-lint/cmd/golangci-lint
 
 before_script:
-  - gometalinter
+  - golangci-lint run
 
 script:
   - go test -v -race -covermode=atomic -coverprofile=coverage.txt
