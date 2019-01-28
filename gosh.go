@@ -48,6 +48,8 @@ type (
 	}
 )
 
+var _ http.Handler = (*StatisticsHandler)(nil)
+
 // NewStatisticsHandler returns new StatisticsHandler.
 func NewStatisticsHandler() *StatisticsHandler {
 	h := &StatisticsHandler{}

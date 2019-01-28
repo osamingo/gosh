@@ -6,8 +6,6 @@ import (
 	"testing"
 )
 
-var _ http.Handler = (*StatisticsHandler)(nil)
-
 func TestNewStatisticsHandler(t *testing.T) {
 	h := NewStatisticsHandler()
 	if h == nil {
@@ -45,7 +43,7 @@ func TestStatisticsHandler_MeasureRuntime(t *testing.T) {
 	}()
 	h := NewStatisticsHandler()
 	ss := make([]*Statistics, 100000)
-	for i := 0; i < len(ss); i ++ {
+	for i := 0; i < len(ss); i++ {
 		s := h.MeasureRuntime()
 		ss[i] = &s
 	}
