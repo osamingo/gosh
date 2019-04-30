@@ -48,10 +48,8 @@ type (
 	}
 )
 
-var _ http.Handler = (*StatisticsHandler)(nil)
-
 // NewStatisticsHandler returns new StatisticsHandler.
-func NewStatisticsHandler() *StatisticsHandler {
+func NewStatisticsHandler() http.Handler {
 	h := &StatisticsHandler{}
 	h.MeasureRuntime()
 	return h
