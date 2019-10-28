@@ -12,6 +12,10 @@
   - Go runtime statistics struct.
   - Go runtime statistics API handler.
   - Go runtime measure method.
+- You can specify your favorite JSON Encoder.
+  - [encoding/json](https://golang.org/pkg/encoding/json/) package
+  - [json-iterator/go](http://godoc.org/github.com/json-iterator/go) package
+  - your original package
 
 ## Install
 
@@ -27,6 +31,8 @@ $ go get -u github.com/osamingo/gosh
 package main
 
 import (
+	"encoding/json"
+	"io"
 	"log"
 	"net/http"
 
@@ -35,8 +41,15 @@ import (
 
 func main() {
 
+	h, err := gosh.NewStatisticsHandler(func(w io.Writer) gosh.JSONEncoder {
+		return json.NewEncoder(w)
+	})
+	if err != nil {
+		log.Fatalln(err)
+	}
+
 	mux := http.NewServeMux()
-	mux.Handle("/healthz", gosh.NewStatisticsHandler())
+	mux.Handle("/healthz", h)
 
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		log.Fatalln(err)
