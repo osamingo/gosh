@@ -3,6 +3,7 @@ package gosh_test
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -12,8 +13,19 @@ import (
 	"github.com/osamingo/gosh"
 )
 
+func defaultNewJSONEncoder(w io.Writer) gosh.JSONEncoder {
+	return json.NewEncoder(w)
+}
+
 func TestNewStatisticsHandler(t *testing.T) {
-	h := gosh.NewStatisticsHandler()
+	_, err := gosh.NewStatisticsHandler(nil)
+	if err == nil {
+		t.Fatal("expect occur an error")
+	}
+	h, err := gosh.NewStatisticsHandler(defaultNewJSONEncoder)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if h == nil {
 		t.Fatal("value is nil")
 	}
@@ -25,7 +37,11 @@ func TestNewStatisticsHandler(t *testing.T) {
 
 func TestStatisticsHandler_ServeHTTP(t *testing.T) {
 
-	srv := httptest.NewServer(gosh.NewStatisticsHandler())
+	h, err := gosh.NewStatisticsHandler(defaultNewJSONEncoder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	srv := httptest.NewServer(h)
 	defer srv.Close()
 
 	resp, err := http.Get(srv.URL)
@@ -48,20 +64,28 @@ func TestStatisticsHandler_MeasureRuntime(t *testing.T) {
 			t.Fatal("panic occurred")
 		}
 	}()
-	h := gosh.NewStatisticsHandler().(*gosh.StatisticsHandler)
+	h, err := gosh.NewStatisticsHandler(defaultNewJSONEncoder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	hh := h.(*gosh.StatisticsHandler)
 	ss := make([]*gosh.Statistics, 100000)
 	for i := 0; i < len(ss); i++ {
-		s := h.MeasureRuntime()
+		s := hh.MeasureRuntime()
 		ss[i] = &s
 	}
 }
 
 func BenchmarkStatisticsHandler_MeasureRuntime(b *testing.B) {
-	h := gosh.NewStatisticsHandler().(*gosh.StatisticsHandler)
+	h, err := gosh.NewStatisticsHandler(defaultNewJSONEncoder)
+	if err != nil {
+		b.Fatal(err)
+	}
+	hh := h.(*gosh.StatisticsHandler)
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		h.MeasureRuntime()
+		hh.MeasureRuntime()
 	}
 }
 
@@ -69,8 +93,13 @@ func ExampleNewStatisticsHandler() {
 
 	const path = "/healthz"
 
+	h, err := gosh.NewStatisticsHandler(defaultNewJSONEncoder)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	mux := http.NewServeMux()
-	mux.Handle(path, gosh.NewStatisticsHandler())
+	mux.Handle(path, h)
 
 	srv := httptest.NewServer(mux)
 	defer srv.Close()

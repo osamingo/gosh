@@ -1,7 +1,8 @@
 package gosh
 
 import (
-	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
 	"runtime"
 	"sync"
@@ -41,24 +42,38 @@ type (
 	}
 	// A StatisticsHandler provides runtime information handler.
 	StatisticsHandler struct {
+		NewJSONEncoder func(w io.Writer) JSONEncoder
+
 		m                sync.Mutex
 		lastSampledAt    time.Time
 		lastPauseTotalNs uint64
 		lastNumGC        uint32
 	}
+
+	// A JSONEncoder provides Encode method.
+	// The Encode method writes the JSON encoding of v to the stream, followed by a newline character.
+	JSONEncoder interface {
+		Encode(v interface{}) error
+	}
 )
 
 // NewStatisticsHandler returns new StatisticsHandler.
-func NewStatisticsHandler() http.Handler {
-	h := &StatisticsHandler{}
+// If argument is nil, automatically use json.NewEncoder in standard library.
+func NewStatisticsHandler(f func(w io.Writer) JSONEncoder) (http.Handler, error) {
+	if f == nil {
+		return nil, errors.New("gosh: an argument should not be nil")
+	}
+	h := &StatisticsHandler{
+		NewJSONEncoder: f,
+	}
 	h.MeasureRuntime()
-	return h
+	return h, nil
 }
 
 // ServeHTTP implements http.Handler interface.
 func (sh *StatisticsHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(sh.MeasureRuntime()); err != nil {
+	if err := sh.NewJSONEncoder(w).Encode(sh.MeasureRuntime()); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
 }
