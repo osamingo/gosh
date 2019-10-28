@@ -58,7 +58,6 @@ type (
 )
 
 // NewStatisticsHandler returns new StatisticsHandler.
-// If argument is nil, automatically use json.NewEncoder in standard library.
 func NewStatisticsHandler(f func(w io.Writer) JSONEncoder) (http.Handler, error) {
 	if f == nil {
 		return nil, errors.New("gosh: an argument should not be nil")
