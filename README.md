@@ -12,10 +12,10 @@
   - Go runtime statistics struct.
   - Go runtime statistics API handler.
   - Go runtime measure method.
-- You can specify your favorite JSON Encoder.
-  - [encoding/json](https://golang.org/pkg/encoding/json/) package
-  - [json-iterator/go](http://godoc.org/github.com/json-iterator/go) package
-  - your original package
+- You can specify the favorite JSON encoder.
+  - [`encoding/json`](https://golang.org/pkg/encoding/json/) package.
+  - [`json-iterator/go`](http://godoc.org/github.com/json-iterator/go) package.
+  - The original package you created, and so on.
 
 ## Install
 
