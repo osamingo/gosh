@@ -8,13 +8,24 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"runtime"
 	"testing"
 
 	"github.com/osamingo/gosh"
 )
 
-func defaultNewJSONEncoder(w io.Writer) gosh.JSONEncoder {
+type wrongJSONEncoder struct{}
+
+func (e *wrongJSONEncoder) Encode(v interface{}) error {
+	return fmt.Errorf("wrong json encoder")
+}
+
+func newJSONEncoder(w io.Writer) gosh.JSONEncoder {
 	return json.NewEncoder(w)
+}
+
+func newWrongJSONEncoder(w io.Writer) gosh.JSONEncoder {
+	return &wrongJSONEncoder{}
 }
 
 func TestNewStatisticsHandler(t *testing.T) {
@@ -22,7 +33,7 @@ func TestNewStatisticsHandler(t *testing.T) {
 	if err == nil {
 		t.Fatal("expect occur an error")
 	}
-	h, err := gosh.NewStatisticsHandler(defaultNewJSONEncoder)
+	h, err := gosh.NewStatisticsHandler(newJSONEncoder)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -37,7 +48,7 @@ func TestNewStatisticsHandler(t *testing.T) {
 
 func TestStatisticsHandler_ServeHTTP(t *testing.T) {
 
-	h, err := gosh.NewStatisticsHandler(defaultNewJSONEncoder)
+	h, err := gosh.NewStatisticsHandler(newJSONEncoder)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -58,13 +69,36 @@ func TestStatisticsHandler_ServeHTTP(t *testing.T) {
 	}
 }
 
+func TestStatisticsHandler_ServeHTTPWithError(t *testing.T) {
+
+	h, err := gosh.NewStatisticsHandler(newWrongJSONEncoder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	srv := httptest.NewServer(h)
+	defer srv.Close()
+
+	resp, err := http.Get(srv.URL)
+	if err != nil {
+		t.Fatal("failed to request")
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusInternalServerError {
+		t.Fatal("unexpect status code")
+	}
+	if resp.ContentLength == 0 {
+		t.Fatal("response body should not be empty")
+	}
+}
+
 func TestStatisticsHandler_MeasureRuntime(t *testing.T) {
 	defer func() {
 		if err := recover(); err != nil {
 			t.Fatal("panic occurred")
 		}
 	}()
-	h, err := gosh.NewStatisticsHandler(defaultNewJSONEncoder)
+	h, err := gosh.NewStatisticsHandler(newJSONEncoder)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -76,8 +110,29 @@ func TestStatisticsHandler_MeasureRuntime(t *testing.T) {
 	}
 }
 
+func TestStatisticsHandler_MeasureRuntimeWithGC(t *testing.T) {
+	defer func() {
+		if err := recover(); err != nil {
+			t.Fatal("panic occurred")
+		}
+	}()
+	h, err := gosh.NewStatisticsHandler(newJSONEncoder)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 256; i++ {
+		runtime.GC()
+	}
+	hh := h.(*gosh.StatisticsHandler)
+	ss := make([]*gosh.Statistics, 100000)
+	for i := 0; i < len(ss); i++ {
+		s := hh.MeasureRuntime()
+		ss[i] = &s
+	}
+}
+
 func BenchmarkStatisticsHandler_MeasureRuntime(b *testing.B) {
-	h, err := gosh.NewStatisticsHandler(defaultNewJSONEncoder)
+	h, err := gosh.NewStatisticsHandler(newJSONEncoder)
 	if err != nil {
 		b.Fatal(err)
 	}
@@ -93,7 +148,7 @@ func ExampleNewStatisticsHandler() {
 
 	const path = "/healthz"
 
-	h, err := gosh.NewStatisticsHandler(defaultNewJSONEncoder)
+	h, err := gosh.NewStatisticsHandler(newJSONEncoder)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
