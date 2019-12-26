@@ -1,6 +1,6 @@
 # Go Statistics Handler
 
-[![Build Status](https://travis-ci.org/osamingo/gosh.svg?branch=master)](https://travis-ci.org/osamingo/gosh)
+[![GitHub Actions](https://github.com/osamingo/gosh/workflows/CI/badge.svg?branch=master)](https://github.com/osamingo/gosh/actions?query=workflow%3ACI+branch%3Amaster)
 [![codecov](https://codecov.io/gh/osamingo/gosh/branch/master/graph/badge.svg)](https://codecov.io/gh/osamingo/gosh)
 [![Go Report Card](https://goreportcard.com/badge/github.com/osamingo/gosh)](https://goreportcard.com/report/github.com/osamingo/gosh)
 [![GoDoc](https://godoc.org/github.com/osamingo/gosh?status.svg)](https://godoc.org/github.com/osamingo/gosh)
