@@ -8,13 +8,14 @@
 
 ## About
 
+- The `gosh` is an abbreviation for Go Statistics Handler.
 - This Repository is provided following functions.
   - Go runtime statistics struct.
   - Go runtime statistics API handler.
   - Go runtime measure method.
 - You can specify the favorite JSON encoder.
-  - [`encoding/json`](https://golang.org/pkg/encoding/json/) package.
-  - [`json-iterator/go`](http://godoc.org/github.com/json-iterator/go) package.
+  - [`encoding/json`](https://pkg.go.dev/encoding/json/) package.
+  - [`goccy/go-json`](https://pkg.go.dev/github.com/goccy/go-json) package.
   - The original package you created, and so on.
 
 ## Install
