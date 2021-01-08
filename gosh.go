@@ -79,7 +79,6 @@ func (sh *StatisticsHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 
 // MeasureRuntime accesses runtime information.
 func (sh *StatisticsHandler) MeasureRuntime() Statistics {
-
 	sh.m.Lock()
 	defer sh.m.Unlock()
 
@@ -97,8 +96,9 @@ func (sh *StatisticsHandler) MeasureRuntime() Statistics {
 	if sh.lastNumGC > 0 {
 		gcPerSec = float64(gcCount) / now.Sub(sh.lastSampledAt).Seconds()
 	}
-	if gcCount > 256 {
-		gcCount = 256
+	const gcCountThreshold = 256
+	if gcCount > gcCountThreshold {
+		gcCount = gcCountThreshold
 	}
 
 	gcPause := make([]float64, gcCount)

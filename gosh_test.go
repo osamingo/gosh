@@ -1,6 +1,7 @@
 package gosh_test
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -47,7 +48,6 @@ func TestNewStatisticsHandler(t *testing.T) {
 }
 
 func TestStatisticsHandler_ServeHTTP(t *testing.T) {
-
 	h, err := gosh.NewStatisticsHandler(newJSONEncoder)
 	if err != nil {
 		t.Fatal(err)
@@ -55,7 +55,11 @@ func TestStatisticsHandler_ServeHTTP(t *testing.T) {
 	srv := httptest.NewServer(h)
 	defer srv.Close()
 
-	resp, err := http.Get(srv.URL)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
+	if err != nil {
+		t.Fatal("failed to generate request")
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		t.Fatal("failed to request")
 	}
@@ -70,7 +74,6 @@ func TestStatisticsHandler_ServeHTTP(t *testing.T) {
 }
 
 func TestStatisticsHandler_ServeHTTPWithError(t *testing.T) {
-
 	h, err := gosh.NewStatisticsHandler(newWrongJSONEncoder)
 	if err != nil {
 		t.Fatal(err)
@@ -78,7 +81,11 @@ func TestStatisticsHandler_ServeHTTPWithError(t *testing.T) {
 	srv := httptest.NewServer(h)
 	defer srv.Close()
 
-	resp, err := http.Get(srv.URL)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
+	if err != nil {
+		t.Fatal("failed to generate request")
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		t.Fatal("failed to request")
 	}
@@ -145,7 +152,6 @@ func BenchmarkStatisticsHandler_MeasureRuntime(b *testing.B) {
 }
 
 func ExampleNewStatisticsHandler() {
-
 	const path = "/healthz"
 
 	h, err := gosh.NewStatisticsHandler(newJSONEncoder)
@@ -159,7 +165,11 @@ func ExampleNewStatisticsHandler() {
 	srv := httptest.NewServer(mux)
 	defer srv.Close()
 
-	resp, err := http.Get(srv.URL + path)
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL+path, nil)
+	if err != nil {
+		log.Fatalln("failed to generate request")
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		log.Fatalln(err)
 	}
