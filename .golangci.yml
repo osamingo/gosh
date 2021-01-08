@@ -10,3 +10,4 @@ linters:
   disable:
     - whitespace
     - wsl
+    - goerr113
