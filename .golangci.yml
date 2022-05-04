@@ -4,10 +4,19 @@ linters-settings:
     check-blank: true
   misspell:
     locale: US
+  funlen:
+    lines: 65
+  varnamelen:
+    min-name-length: 2
+  tagliatelle:
+    case:
+      rules:
+        json: snake
+  ireturn:
+    allow:
+      - error
+      - net\/http\.Handler
+      - github\.com\/osamingo\/gosh\.JSONEncoder
 
 linters:
   enable-all: true
-  disable:
-    - whitespace
-    - wsl
-    - goerr113

@@ -3,6 +3,7 @@ package gosh
 import (
 	"errors"
 	"io"
+	"math"
 	"net/http"
 	"runtime"
 	"sync"
@@ -58,20 +59,28 @@ type (
 )
 
 // NewStatisticsHandler returns new StatisticsHandler.
-func NewStatisticsHandler(f func(w io.Writer) JSONEncoder) (http.Handler, error) {
-	if f == nil {
+func NewStatisticsHandler(fn func(w io.Writer) JSONEncoder) (http.Handler, error) {
+	if fn == nil {
+		//nolint: goerr113
 		return nil, errors.New("gosh: an argument should not be nil")
 	}
-	h := &StatisticsHandler{
-		NewJSONEncoder: f,
+
+	sh := &StatisticsHandler{
+		NewJSONEncoder:   fn,
+		m:                sync.Mutex{},
+		lastSampledAt:    time.Time{},
+		lastPauseTotalNs: 0,
+		lastNumGC:        0,
 	}
-	h.MeasureRuntime()
-	return h, nil
+	sh.MeasureRuntime()
+
+	return sh, nil
 }
 
 // ServeHTTP implements http.Handler interface.
 func (sh *StatisticsHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
 	if err := sh.NewJSONEncoder(w).Encode(sh.MeasureRuntime()); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
@@ -83,19 +92,21 @@ func (sh *StatisticsHandler) MeasureRuntime() Statistics {
 	defer sh.m.Unlock()
 
 	var ms runtime.MemStats
+
 	runtime.ReadMemStats(&ms)
+
 	now := time.Now()
 
-	var gcPausePerSec float64
+	var gcPausePerSec, gcPerSec float64
 	if sh.lastPauseTotalNs > 0 {
 		gcPausePerSec = time.Duration(ms.PauseTotalNs - sh.lastPauseTotalNs).Seconds()
 	}
 
-	var gcPerSec float64
 	gcCount := int(ms.NumGC - sh.lastNumGC)
 	if sh.lastNumGC > 0 {
 		gcPerSec = float64(gcCount) / now.Sub(sh.lastSampledAt).Seconds()
 	}
+
 	const gcCountThreshold = 256
 	if gcCount > gcCountThreshold {
 		gcCount = gcCountThreshold
@@ -103,7 +114,7 @@ func (sh *StatisticsHandler) MeasureRuntime() Statistics {
 
 	gcPause := make([]float64, gcCount)
 	for i := 0; i < gcCount; i++ {
-		gcPause[i] = time.Duration(ms.PauseNs[(int(ms.NumGC)-i+255)%256]).Seconds()
+		gcPause[i] = time.Duration(ms.PauseNs[(int(ms.NumGC)-i+math.MaxUint8)%gcCountThreshold]).Seconds()
 	}
 
 	sh.lastSampledAt = now
