@@ -21,7 +21,7 @@
 ## Install
 
 ```bash
-$ go get -u github.com/osamingo/gosh
+$ go get github.com/osamingo/gosh@latest
 ```
 
 ## Usage
