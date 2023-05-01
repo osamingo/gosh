@@ -15,7 +15,7 @@ import (
 
 type wrongJSONEncoder struct{}
 
-func (e *wrongJSONEncoder) Encode(v interface{}) error {
+func (e *wrongJSONEncoder) Encode(_ any) error {
 	return fmt.Errorf("wrong json encoder") //nolint: goerr113
 }
 
@@ -23,7 +23,7 @@ func newJSONEncoder(w io.Writer) gosh.JSONEncoder {
 	return json.NewEncoder(w)
 }
 
-func newWrongJSONEncoder(w io.Writer) gosh.JSONEncoder {
+func newWrongJSONEncoder(_ io.Writer) gosh.JSONEncoder {
 	return &wrongJSONEncoder{}
 }
 
