@@ -60,7 +60,7 @@ func main() {
 
 ### Output
 
-```json
+```bash
 $ curl "localhost:8080/healthz" | jq .
 {
   "timestamp": 1527317620,
