@@ -59,7 +59,7 @@ func TestStatisticsHandler_ServeHTTP(t *testing.T) {
 	srv := httptest.NewServer(h)
 	defer srv.Close()
 
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
+	req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, srv.URL, nil)
 	if err != nil {
 		t.Fatal("failed to generate request")
 	}
@@ -88,7 +88,7 @@ func TestStatisticsHandler_ServeHTTPWithError(t *testing.T) {
 	srv := httptest.NewServer(h)
 	defer srv.Close()
 
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
+	req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, srv.URL, nil)
 	if err != nil {
 		t.Fatal("failed to generate request")
 	}
@@ -146,7 +146,7 @@ func TestStatisticsHandler_MeasureRuntimeWithGC(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	for i := 0; i < 256; i++ {
+	for range 256 {
 		runtime.GC()
 	}
 
@@ -176,7 +176,7 @@ func BenchmarkStatisticsHandler_MeasureRuntime(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		hh.MeasureRuntime()
 	}
 }

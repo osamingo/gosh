@@ -113,7 +113,7 @@ func (sh *StatisticsHandler) MeasureRuntime() Statistics {
 	}
 
 	gcPause := make([]float64, gcCount)
-	for i := 0; i < gcCount; i++ {
+	for i := range gcCount {
 		gcPause[i] = time.Duration(ms.PauseNs[(int(ms.NumGC)-i+math.MaxUint8)%gcCountThreshold]).Seconds()
 	}
 
