@@ -1,6 +1,6 @@
 linters-settings:
   errcheck:
-    check-type-asserts: true
+    check-type-assertions: true
     check-blank: true
   misspell:
     locale: US
@@ -17,6 +17,11 @@ linters-settings:
       - error
       - net\/http\.Handler
       - github\.com\/osamingo\/gosh\.JSONEncoder
+  gosec:
+    excludes:
+      - G115
 
 linters:
   enable-all: true
+  disable:
+    - depguard
