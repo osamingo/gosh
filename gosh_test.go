@@ -3,6 +3,7 @@ package gosh_test
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -16,7 +17,7 @@ import (
 type wrongJSONEncoder struct{}
 
 func (e *wrongJSONEncoder) Encode(_ any) error {
-	return fmt.Errorf("wrong json encoder") //nolint: goerr113
+	return errors.New("wrong json encoder") //nolint: goerr113
 }
 
 func newJSONEncoder(w io.Writer) gosh.JSONEncoder {
